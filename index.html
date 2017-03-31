@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <title>Title</title>
+    <meta name='viewport' content='initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, width=device-width'>
+    <link rel='stylesheet' href='bower_components/bootstrap/dist/css/bootstrap.css'>
+    <style type='text/css'>
+        *{
+            margin:0;
+            padding:0;
+            background-color: #f2f2f2;
+        }
+        .record{
+            padding:10px 0;
+        }
+        .talk-content{
+            padding:5px;
+
+        }
+
+        .talk-time{
+            text-align:center;
+        }
+        .portrait{
+            width:40px;
+            height:40px;
+            -webkit-border-radius:50%;
+            -moz-border-radius:50%;
+            border-radius:50%;
+        }
+
+        .portrait-content{
+            padding:0 10px;
+        }
+        .message-content{
+            max-width: 70%;
+
+
+            border:1px solid gray;
+            -webkit-border-radius:6px;
+            -moz-border-radius:6px;
+            border-radius:6px;
+            padding:10px;
+            max-width: 70%;
+            position:relative;
+            background-color: #fff;
+        }
+        .message-content:before,.message-content:after{
+            content: '';
+            position: absolute;
+            border-top: 1px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: none;
+            width: 0;
+            height:0;
+        }
+        .kefu .message-content:before{
+            left:-8px;
+            border-right: 9px solid white;
+            z-index: 2;
+
+        }
+        .kefu .message-content:after{
+            top:10px;
+            left:-9px;
+            border-right: 9px solid gray;
+
+        }
+        .yonghu .message-content:before{
+            right:-8px;
+            border-left: 9px solid white;
+            z-index: 2;
+        }
+        .yonghu .message-content:after{
+            top:10px;
+            right:-9px;
+            border-left: 9px solid gray;
+        }
+        .message-text{
+            background-color: transparent;
+            word-break:break-all;
+            text-align:justify;
+        }
+        .footer{
+            width:100%;
+            position:fixed;
+            bottom:0;
+            padding:10px 5px;
+            background-color: white;
+            vertical-align: middle;
+        }
+        .footer form{
+            background-color: transparent;
+            padding-right:58px;
+            position:relative;
+        }
+        .footer input{
+            border:none;
+            outline: none;
+            height:34px;
+            width:100%;
+            padding:0 4px;
+            background-color: transparent;
+        }
+        .send-btn{
+            position:absolute;
+            right:0;
+            top:0;
+            background-color: #fff;
+            outline: none;
+        }
+        .send-btn img{
+            width:30px;
+            height:30px;
+            background-color: transparent;
+        }
+        .add-content{
+            display: none;
+        }
+
+        .scroll{
+            padding-bottom:50px;
+        }
+        .feedback,.feedback p,.feedback span,.feedback span img{
+            background-color: white;
+        }
+        .feedback span{
+            width:50%;
+            height:40px;
+            text-align: center;
+            display:inline-block;
+            line-height: 40px;
+            border:1px solid gray;
+            border-radius: 6px;
+            padding:3px 3px;
+
+        }
+        .feedback p{
+            margin:5px 0;
+        }
+        .feedback span img{
+            width:30px;
+            height:30px;
+        }
+        .add-file-option{
+            display: block !important;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class='scroll'>
+    <div class='record clearfix kefu'>
+        <div class='talk-time'><span id='time'></span></div>
+        <div class='talk-content clearfix'>
+            <div class='pull-left portrait-content'><img src='img/1.jpg' alt='客服大大' class='portrait'></div>
+            <div class='message-content pull-left'>
+                <div class='message-text'>
+                   欢迎咨询
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+</div>
+<div class='footer'>
+    <form action='' class="send-message">
+        <input type='text' placeholder='请输入关键字，获取对应的制度信息' class='search'>
+        <button class='pull-right btn  send-btn' type='button'>
+            <!--<input type='submit' value='提交'>-->
+            <img src='img/add.png' class='add-file'>
+        </button>
+        <div class='add-content'>
+            <input type='file'>图片
+        </div>
+    </form>
+
+
+</div>
+<script src='bower_components/jquery/dist/jquery.js'></script>
+<script>
+    $(function(){
+
+
+        var time=getFormatDate();
+        $('.time').html(time);
+
+        //客户发送信息
+        $('.send-message').on('click','.btn-default',function(){
+            var content=$('.search').val();
+            var time=getFormatDate();
+            var talking="<div class='record clearfix yonghu'> <div class='talk-time'><span id='time'>"+time+"</span></div> +" +
+                "<div class='talk-content clearfix'> <div class='pull-right portrait-content'><img src='img/add.png' alt='客服大大' class='portrait'>"+
+                "</div> <div class='message-content pull-right'> <div class='message-text'>"+content+"</div> </div> </div> </div>"
+
+            $('.scroll').append(talking);
+            var key={}
+            $.ajax({
+                url:'index.json',
+                success:function(data){
+
+                   var str="";
+                   if(content!='笔记本'){
+                       var serviceError="<div class='record clearfix kefu'> <div class='talk-time'><span class='time'></span></div> <div class='talk-content clearfix'> "+
+                           "<div class='pull-left portrait-content'><img src='img/1.jpg' alt='客服大大' class='portrait'></div> <div class='message-content pull-left'> "+
+                           "<div class='message-text'>不好意思没您想要的，要不再试试</div> </div> </div> </div>";
+                       $('.scroll').append(serviceError);
+                       return false;
+                   }
+                   for(var i=0;i<data.length;i++) {
+                       str+=((i+1)+".<a>"+data[i].title+"</a><br>")
+                   }
+
+                   //发出人工服务的关键字提示
+                    var serviceTalking="<div class='record clearfix kefu'> <div class='talk-time'><span class='time'></span></div> <div class='talk-content clearfix'> "+
+                        "<div class='pull-left portrait-content'><img src='img/1.jpg' alt='客服大大' class='portrait'></div> <div class='message-content pull-left'> "+
+                        "<div class='message-text'>您是不是想问：<br>"+ str +"</div> </div> </div> </div>";
+                    $('.scroll').append(serviceTalking);
+
+                    //点击关键字并弹出信息
+                    $('.message-text a').on('click',function(){
+                        var content=data[$(this).index('a')].content;
+                        var serviceTalking="<div class='record clearfix kefu'> <div class='talk-time'><span class='time'></span></div> <div class='talk-content clearfix'> "+
+                            "<div class='pull-left portrait-content'><img src='img/1.jpg' alt='客服大大' class='portrait'></div> <div class='message-content pull-left'> "+
+                            "<div class='message-text'>"+ content+"</div>  <div class='feedback'> <p>是否解决了您的问题</p>"+
+                        "<span><img src='img/good.png' alt=''>解决</span><span><img src='img/bad.png' alt=''>未解决</span> </div></div> </div> </div>";
+                        $('.scroll').append(serviceTalking);
+                    })
+//                    $('.message-text').on('click','a',function(){
+//                        alert($(this).index('a'))
+//
+                }
+
+
+
+            })
+
+
+
+        })
+
+
+
+
+        //输入字体的时候右边按钮的变化
+        $('.search').keyup(function(){
+            if($(this).val()!=''){
+                $('.send-btn').addClass('btn-default').html('发送');
+            }else {
+                $('.send-btn').removeClass('btn-default').html("<img src='img/add.png' class='add-file'>");
+            }
+
+        })
+
+        //日期格式
+        function getFormatDate(){
+            var date=new Date();
+            var month=date.getMonth()+1;
+            var day=date.getDate();
+            (month <= 9) ? month = '0' + month : '';
+            var currentDate=date.getFullYear()+'-'+month+'-'+day+' '+date.getHours()+
+                ':'+date.getMinutes()+':'+date.getSeconds();
+            return currentDate;
+        }
+
+        //添加文件
+        $('.add-file').click(function(){
+
+            if($(this).attr('src')=='img/add.png'){
+                $(this).attr('src','img/cancel.png')
+            }else {
+                $(this).attr('src','img/add.png') ;
+            }
+            $('.add-content').toggleClass('add-file-option');
+        })
+
+    })
+    
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+</script>
+
+</body>
+</html>
